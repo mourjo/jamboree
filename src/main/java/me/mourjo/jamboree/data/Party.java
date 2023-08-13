@@ -1,16 +1,15 @@
 package me.mourjo.jamboree.data;
 
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 public class Party {
-
     Long id;
     String name;
     String location;
-    ZonedDateTime time;
+    ZonedDateTime createdAt;
 
     public Party() {
         this(-1L, "Unknown", "Unknown");
@@ -20,7 +19,7 @@ public class Party {
         this.id = id;
         this.name = name;
         this.location = location;
-        this.time = LocalDateTime.now().atZone(ZoneId.of("Etc/UTC"));
+        this.createdAt = ZonedDateTime.now();
     }
 
     public Long getId() {
@@ -47,11 +46,20 @@ public class Party {
         this.location = location;
     }
 
-    public ZonedDateTime getTime() {
-        return time;
+    public ZonedDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setTime(ZonedDateTime time) {
-        this.time = time;
+    public void setCreatedAt(ZonedDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Map<String, String> toMap() {
+        return Map.of(
+                "id", String.valueOf(id),
+                "name", name,
+                "location", location,
+                "created_at", createdAt.format(DateTimeFormatter.RFC_1123_DATE_TIME)
+        );
     }
 }
