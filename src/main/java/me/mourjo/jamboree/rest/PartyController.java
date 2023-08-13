@@ -2,6 +2,8 @@ package me.mourjo.jamboree.rest;
 
 
 import me.mourjo.jamboree.service.PartyService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +14,7 @@ import java.util.Map;
 public class PartyController {
 
     private final PartyService service;
+    private Logger logger = LoggerFactory.getLogger(getClass().getName());
 
     PartyController(PartyService service) {
         this.service = service;
@@ -26,6 +29,7 @@ public class PartyController {
 
     @PostMapping("/party/")
     ResponseEntity<Map<String, String>> save(@RequestBody Map<String, String> params) {
+        logger.info("Got request with {}", params);
         if (!params.containsKey("name")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Name is mandatory."));
         }
