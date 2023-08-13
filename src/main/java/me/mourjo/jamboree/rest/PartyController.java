@@ -25,16 +25,16 @@ public class PartyController {
     }
 
     @PostMapping("/party/")
-    ResponseEntity<Map<String, String>> save(@RequestBody Map<String, String> p) {
-        if (!p.containsKey("name")) {
+    ResponseEntity<Map<String, String>> save(@RequestBody Map<String, String> params) {
+        if (!params.containsKey("name")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Name is mandatory."));
         }
 
-        if (!p.containsKey("location")) {
+        if (!params.containsKey("location")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Location is mandatory."));
         }
 
-        var createdParty = service.add(p.get("name"), p.get("location"));
+        var createdParty = service.add(params.get("name"), params.get("location"));
         return ResponseEntity.status(HttpStatus.CREATED).body(createdParty.toMap());
     }
 
