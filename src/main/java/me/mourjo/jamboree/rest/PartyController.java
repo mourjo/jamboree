@@ -4,6 +4,7 @@ package me.mourjo.jamboree.rest;
 import me.mourjo.jamboree.service.PartyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,8 @@ public class PartyController {
 
     @GetMapping("/party/{id}")
     ResponseEntity<Map<String, String>> get(@PathVariable Long id) {
+        MDC.put("PARTY-ID", String.valueOf(id));
+        logger.info("Serving for party {}", id);
         return service.find(id)
                 .map(value -> ResponseEntity.status(HttpStatus.OK).body(value.toMap()))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Not found")));
