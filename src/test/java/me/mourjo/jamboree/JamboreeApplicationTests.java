@@ -29,6 +29,12 @@ class JamboreeApplicationTests {
         var response = restTemplate.getForObject(getEndpoint("1"), Map.class);
         assertEquals(Map.of("error", "Not found"), response);
 
+        response = restTemplate.postForObject(postEndpoint(), Map.of("location", "Kolkata"), Map.class);
+        assertEquals(Map.of("error", "Name is mandatory."), response);
+
+        response = restTemplate.postForObject(postEndpoint(), Map.of("name", "Bangla"), Map.class);
+        assertEquals(Map.of("error", "Location is mandatory."), response);
+
         for (int i = 1; i <= 10; i++) {
             var data = Map.of("name", "party-" + i, "location", "Kolkata");
             response = restTemplate.postForObject(postEndpoint(), data, Map.class);
