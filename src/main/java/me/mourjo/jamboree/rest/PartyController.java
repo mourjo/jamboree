@@ -23,7 +23,7 @@ public class PartyController {
 
     @GetMapping("/party/{id}")
     ResponseEntity<Map<String, String>> get(@PathVariable Long id) {
-        MDC.put("PARTY-ID", String.valueOf(id));
+        MDC.put("PARTY_ID", String.valueOf(id));
         logger.info("Serving for party {}", id);
         return service.find(id)
                 .map(value -> ResponseEntity.status(HttpStatus.OK).body(value.toMap()))
