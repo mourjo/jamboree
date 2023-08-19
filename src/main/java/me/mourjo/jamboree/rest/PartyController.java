@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 public class PartyController {
@@ -23,6 +24,7 @@ public class PartyController {
 
     @GetMapping("/party/{id}")
     ResponseEntity<Map<String, String>> get(@PathVariable Long id) {
+        MDC.put("REQUEST_ID", UUID.randomUUID().toString());
         MDC.put("PARTY_ID", String.valueOf(id));
         logger.info("Serving for party {}", id);
         return service.find(id)
@@ -32,7 +34,8 @@ public class PartyController {
 
     @PostMapping("/party/")
     ResponseEntity<Map<String, String>> save(@RequestBody Map<String, String> params) {
-        logger.info("Got request with {}", params);
+        MDC.put("REQUEST_ID", UUID.randomUUID().toString());
+        logger.info("Got request to create a party with {}", params);
         if (!params.containsKey("name")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Name is mandatory."));
         }
@@ -42,6 +45,8 @@ public class PartyController {
         }
 
         var createdParty = service.add(params.get("name"), params.get("location"));
+        MDC.put("PARTY_ID", String.valueOf(createdParty.getId()));
+        logger.info("Created a party {} with {}", createdParty.getId(), params);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdParty.toMap());
     }
 

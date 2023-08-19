@@ -25,6 +25,7 @@ mvn spring-boot:run
 ## Using the endpoints
 
 Create a party:
+
 ```bash
 $ curl -s \
   -H 'Content-Type: application/json' \
@@ -39,6 +40,7 @@ $ curl -s \
 ```
 
 Get a party:
+
 ```bash
 $ curl -s http://localhost:8080/party/1 | jq .
 {
@@ -50,9 +52,32 @@ $ curl -s http://localhost:8080/party/1 | jq .
 ```
 
 Get a party that has not been created:
+
 ```bash
 $ curl -s http://localhost:8080/party/2 | jq .
 {
   "error": "Not found"
 }
 ```
+
+## Problem
+
+### Setup
+Start Kibana, Elasticsearch and Logstash:
+```bash
+docker compose up
+```
+
+Start firing requeests with:
+```bash
+./scripts/requests.sh
+```
+
+### Logs
+Open Kibana on the browser: https://twirl.otee.dev/l/KBkcl
+
+
+If MDC is not cleared up, we can get misleading logs - here we see that for the same request ID, there are
+two party IDs
+
+![Alt text](src/main/resources/kibana_1.png)
