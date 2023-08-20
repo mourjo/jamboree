@@ -74,7 +74,7 @@ Start firing requeests with:
 ```
 
 ### Logs
-Open Kibana on the browser: https://twirl.otee.dev/l/KBkcl
+Open Kibana on the browser: http://localhost:5601/app/discover#/view/a8a646e0-3f5a-11ee-acc5-bf1ed6446365
 
 
 If MDC is not cleared up, we can get misleading logs - here we see that for the same request ID, there are

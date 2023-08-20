@@ -45,16 +45,11 @@ services:
     depends_on:
       kibana:
         condition: service_healthy
+    volumes:
+      - "./conf/kibana_export.ndjson:/usr/share/kibana_export.ndjson:ro"
     restart: "no"
     command: >
-      curl -X POST "kibana:5601/api/data_views/data_view" -H "kbn-xsrf: true" -H "Content-Type: application/json" -d'
-      {
-        "data_view": {
-           "title": "jamboree-*",
-           "name": "Jamboree Data View"
-        }
-      }
-      '
+      curl -X POST "kibana:5601/api/saved_objects/_import" --form file=@/usr/share/kibana_export.ndjson -H 'kbn-xsrf: true'
 
   logstash:
     image: docker.elastic.co/logstash/logstash:8.8.0
