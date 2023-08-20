@@ -3,14 +3,6 @@ version: "3.8"
 volumes:
   certs:
     driver: local
-  esdata01:
-    driver: local
-  kibanadata:
-    driver: local
-  filebeatdata01:
-    driver: local
-  logstashdata01:
-    driver: local
 
 networks:
   default:
@@ -19,38 +11,60 @@ networks:
 
 services:
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
-    volumes:
-      - esdata01:/usr/share/elasticsearch/data
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.8.0
     ports:
-      - ${ES_PORT}:9200
+      - 9200:9200
     environment:
-      - node.name=es01
-      - cluster.name=${CLUSTER_NAME}
       - discovery.type=single-node
       - xpack.security.enabled=false
+    healthcheck:
+      test: curl -s http://localhost:9200 >/dev/null || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 50
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
-    volumes:
-      - kibanadata:/usr/share/kibana/data
+    image: docker.elastic.co/kibana/kibana:8.8.0
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
     ports:
-      - ${KIBANA_PORT}:5601
+      - 5601:5601
     environment:
       - SERVERNAME=kibana
       - SERVER_NAME=kibana
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    healthcheck:
+      test: curl -s -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'
+      interval: 30s
+      timeout: 10s
+      retries: 50
 
+  kibanasetup:
+    image: alpine/curl:8.2.1
+    depends_on:
+      kibana:
+        condition: service_healthy
+    restart: "no"
+    command: >
+      curl -X POST "kibana:5601/api/data_views/data_view" -H "kbn-xsrf: true" -H "Content-Type: application/json" -d'
+      {
+        "data_view": {
+           "title": "jamboree-*",
+           "name": "Jamboree Data View"
+        }
+      }
+      '
 
-  logstash01:
-    image: docker.elastic.co/logstash/logstash:${STACK_VERSION}
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.8.0
+    depends_on:
+      kibana:
+        condition: service_healthy
     user: root
     volumes:
-      - logstashdata01:/usr/share/logstash/data
       - "./logs/:/usr/share/logstash/jamboree_logs/"
       - "./conf/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro"
     environment:
       - xpack.monitoring.enabled=false
-      - ELASTIC_USER=elastic
-      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - ELASTIC_HOSTS=http://elasticsearch:9200
