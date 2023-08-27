@@ -10,16 +10,16 @@ Compile into a jar:
 mvn clean package spring-boot:repackage 
 ```
 
-Run the jar:
+Run the jar on port 7123:
 
 ```
-java -jar target/jamboree-0.0.1-SNAPSHOT.jar
+java -jar target/jamboree-0.0.1-SNAPSHOT.jar --server.port=7123
 ```
 
-Or combine the steps and run it directly:
+Or combine the steps and run it directly and start the server on a given 7123:
 
 ```bash 
-mvn spring-boot:run
+mvn clean && mvn spring-boot:run -Dspring-boot.run.jvmArguments='-Dserver.port=7123'
 ```
 
 ## Using the endpoints
@@ -29,7 +29,7 @@ Create a party:
 ```bash
 $ curl -s \
   -H 'Content-Type: application/json' \
-  -XPOST http://localhost:8080/party/ \
+  -XPOST http://localhost:7123/party/ \
   -d '{"name": "Traders Assembly", "location": "Gariahat"}' | jq .
 {
   "created_at": "Sun, 13 Aug 2023 16:05:18 +0200",
@@ -42,7 +42,7 @@ $ curl -s \
 Get a party:
 
 ```bash
-$ curl -s http://localhost:8080/party/1 | jq .
+$ curl -s http://localhost:7123/party/1 | jq .
 {
   "created_at": "Sun, 13 Aug 2023 16:05:18 +0200",
   "location": "Gariahat",
@@ -54,7 +54,7 @@ $ curl -s http://localhost:8080/party/1 | jq .
 Get a party that has not been created:
 
 ```bash
-$ curl -s http://localhost:8080/party/2 | jq .
+$ curl -s http://localhost:7123/party/2 | jq .
 {
   "error": "Not found"
 }
@@ -68,9 +68,9 @@ Start Kibana, Elasticsearch and Logstash:
 docker compose up
 ```
 
-Start firing requeests with:
+Start firing requests with:
 ```bash
-./scripts/requests.sh
+./scripts/requests.sh 7123
 ```
 
 ### Logs
