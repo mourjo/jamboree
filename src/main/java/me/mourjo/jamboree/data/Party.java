@@ -1,6 +1,8 @@
 package me.mourjo.jamboree.data;
 
 
+import me.mourjo.jamboree.datetime.Format;
+
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -8,18 +10,28 @@ import java.util.Map;
 public class Party {
     Long id;
     String name;
+    ZonedDateTime time;
     String location;
     ZonedDateTime createdAt;
 
     public Party() {
-        this(-1L, "Unknown", "Unknown");
+        this(-1L, "Unknown", "Unknown", ZonedDateTime.now());
     }
 
-    public Party(Long id, String name, String location) {
+    public Party(Long id, String name, String location, ZonedDateTime time) {
         this.id = id;
         this.name = name;
         this.location = location;
+        this.time = time;
         this.createdAt = ZonedDateTime.now();
+    }
+
+    public ZonedDateTime getTime() {
+        return time;
+    }
+
+    public void setTime(ZonedDateTime time) {
+        this.time = time;
     }
 
     public Long getId() {
@@ -59,6 +71,7 @@ public class Party {
                 "id", String.valueOf(id),
                 "name", name,
                 "location", location,
+                "time", Format.unparse(time),
                 "created_at", createdAt.format(DateTimeFormatter.RFC_1123_DATE_TIME)
         );
     }

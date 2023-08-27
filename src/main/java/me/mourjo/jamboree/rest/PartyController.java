@@ -1,7 +1,10 @@
 package me.mourjo.jamboree.rest;
 
 
+import me.mourjo.jamboree.datetime.Format;
 import me.mourjo.jamboree.service.PartyService;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -9,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.UUID;
 
@@ -44,7 +49,10 @@ public class PartyController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Location is mandatory."));
         }
 
-        var createdParty = service.add(params.get("name"), params.get("location"));
+        var time = params.get("time");
+
+
+        var createdParty = service.add(params.get("name"), params.get("location"), Format.parse(time));
         MDC.put("PARTY_ID", String.valueOf(createdParty.getId()));
         logger.info("Created a party {} with {}", createdParty.getId(), params);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdParty.toMap());

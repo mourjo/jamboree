@@ -4,6 +4,7 @@ import me.mourjo.jamboree.data.Party;
 import me.mourjo.jamboree.data.PartyRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
 import java.util.Optional;
 
 @Service
@@ -16,8 +17,8 @@ public class PartyService {
         this.idGenerator = idGenerator;
     }
 
-    public Party add(String name, String location) {
-        Party p = new Party(idGenerator.generate(), name, location);
+    public Party add(String name, String location, ZonedDateTime ts) {
+        Party p = new Party(idGenerator.generate(), name, location, ts);
         return repository.save(p);
     }
 
