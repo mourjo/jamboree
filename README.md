@@ -81,7 +81,18 @@ Start firing requests with:
 Open Kibana on the browser: http://localhost:5601/app/discover#/view/a8a646e0-3f5a-11ee-acc5-bf1ed6446365
 
 
-If MDC is not cleared up, we can get misleading logs - here we see that for the same request ID, there are
-two party IDs
+If MDC is not cleared up, we can get misleading logs - here we are querying for the entire history of the part 25 - but
+we see that the latest log (topmost) seems to suggest that we are creating another party - but party 23 already exists.
 
-![Alt text](src/main/resources/kibana_1.png)
+![Alt text](src/main/resources/kibana_2.png)
+
+
+Digging a bit deeper, if we now log only the request ID from the previous request, we see two logs having the same
+request ID. Since we are using UUIDs for request ID logging, this screenshot seems to suggest that we created two parties
+in the same request.
+
+![Alt text](src/main/resources/kibana_3.png)
+
+But in reality, that is not so, what happens in the log at the bottom is that it is reusing a past request's context
+which has not been properly cleaned up - so we see that although the request parameters did not have an ID, it still
+logs an ID from the last request that the thread served.
