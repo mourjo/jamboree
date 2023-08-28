@@ -80,18 +80,24 @@ Start firing requests with:
 ### Logs
 Open Kibana on the browser: http://localhost:5601/app/discover#/view/a8a646e0-3f5a-11ee-acc5-bf1ed6446365
 
+What you see is a good example of structured logging - we see the different fields in the log message in the columns:
+![Alt text](src/main/resources/kibana_4.png)
 
-If MDC is not cleared up, we can get misleading logs - here we are querying for the entire history of the part 25 - but
-we see that the latest log (topmost) seems to suggest that we are creating another party - but party 23 already exists.
+We can now drill down on one of the fields, here we are looking at all logs for the party 250:
 
-![Alt text](src/main/resources/kibana_2.png)
+![Alt text](src/main/resources/kibana_7.png)
+
+If MDC is not cleared up, we can get misleading logs - here we are querying for the entire history of the part 251 - but
+we see that the latest log (topmost) seems to suggest that we are creating another party - but party 251 already exists.
+
+![Alt text](src/main/resources/kibana_5.png)
 
 
-Digging a bit deeper, if we now log only the request ID from the previous request, we see two logs having the same
+Digging a bit deeper, if we now look only at the request ID from the previous request, we see two logs having the same
 request ID. Since we are using UUIDs for request ID logging, this screenshot seems to suggest that we created two parties
 in the same request.
 
-![Alt text](src/main/resources/kibana_3.png)
+![Alt text](src/main/resources/kibana_6.png)
 
 But in reality, that is not so, what happens in the log at the bottom is that it is reusing a past request's context
 which has not been properly cleaned up - so we see that although the request parameters did not have an ID, it still
