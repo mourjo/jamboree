@@ -18,7 +18,7 @@ while true ; do
   day=$((((RANDOM % 26)) + 1));
   printf -v day_str "%02d" $day;
 
-  hour=$((((RANDOM % 23) + 1));
+  hour=$(((RANDOM % 23) + 1));
   printf -v hour_str "%02d" $hour;
 
   minute=$((((RANDOM % 59)) + 1));
