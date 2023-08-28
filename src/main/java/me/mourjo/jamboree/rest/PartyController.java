@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.Executors;
 
 @RestController
 public class PartyController {
@@ -42,6 +43,12 @@ public class PartyController {
         }
 
         if (!params.containsKey("location")) {
+            logger.error("Missing parameter: location");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Location is mandatory."));
+        }
+
+        if (!params.containsKey("time")) {
+            logger.error("Missing parameter: time");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Location is mandatory."));
         }
 
@@ -49,7 +56,7 @@ public class PartyController {
         var createdParty = service.add(params.get("name"), params.get("location"), time);
 
         MDC.put("PARTY_ID", String.valueOf(createdParty.getId()));
-        logger.info("Created a party {} with {}", createdParty.getId(), params);
+
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdParty.toMap());
     }
@@ -58,6 +65,11 @@ public class PartyController {
     public Map<String, String> index() {
         logger.info("Reading index path");
         return Map.of("message", "Welcome to Jamboree!");
+    }
+
+    @RequestMapping(value = "*")
+    public ResponseEntity<Map<String, String>> notFound() {
+        return ResponseEntity.status(404).body(Map.of("error", "Not found"));
     }
 
 }

@@ -16,5 +16,7 @@ sleep 0.33
 scripts/reads.sh "$PORT" &
 sleep 0.79
 scripts/index.sh "$PORT" &
+sleep 0.7
+scripts/bad_requests.sh "$PORT" &
 
 wait;
