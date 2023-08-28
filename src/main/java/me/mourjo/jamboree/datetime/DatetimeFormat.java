@@ -10,12 +10,28 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 
-public class Format {
-    static private Logger logger = LoggerFactory.getLogger(Format.class);
-
+public class DatetimeFormat {
     static final DateTimeFormatter unparser = DateTimeFormatter.RFC_1123_DATE_TIME;
-
     static final List<DateTimeFormatter> FORMATTERS = List.of(
+            DateTimeFormatter.ofPattern("dd MM yyyy"),
+            DateTimeFormatter.ofPattern("dd-MM-yyyy"),
+            DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"),
+            DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm z"),
+            DateTimeFormatter.ofPattern("dd MM yyyy HH:mm"),
+            DateTimeFormatter.ofPattern("dd MM yyyy HH:mm z"),
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"),
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm z"),
+            DateTimeFormatter.ofPattern("yyyy-MM-dd"),
+            DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy"),
+            DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy z"),
+            DateTimeFormatter.ofPattern("HH:mm dd MM yyyy"),
+            DateTimeFormatter.ofPattern("HH:mm dd MM yyyy z"),
+            DateTimeFormatter.ofPattern("HH:mm, dd-MM-yyyy"),
+            DateTimeFormatter.ofPattern("HH:mm, dd-MM-yyyy z"),
+            DateTimeFormatter.ofPattern("HH:mm, dd MM yyyy"),
+            DateTimeFormatter.ofPattern("HH:mm, dd MM yyyy z"),
+            DateTimeFormatter.ofPattern("HH:mm, dd MM yyyy"),
+            DateTimeFormatter.ofPattern("HH:mm, dd MM yyyy z"),
             DateTimeFormatter.RFC_1123_DATE_TIME,
             DateTimeFormatter.BASIC_ISO_DATE,
             DateTimeFormatter.ISO_LOCAL_DATE,
@@ -31,12 +47,10 @@ public class Format {
             DateTimeFormatter.ISO_ORDINAL_DATE,
             DateTimeFormatter.ISO_WEEK_DATE,
             DateTimeFormatter.ISO_INSTANT,
-            DateTimeFormatter.RFC_1123_DATE_TIME,
-            DateTimeFormatter.ofPattern("dd MM yyyy"),
-            DateTimeFormatter.ofPattern("dd-MM-yyyy"),
-            DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"),
-            DateTimeFormatter.ofPattern("dd MM yyyy HH:mm")
+            DateTimeFormatter.RFC_1123_DATE_TIME
+
     );
+    static private final Logger logger = LoggerFactory.getLogger(DatetimeFormat.class);
 
     public static ZonedDateTime parse(String dateTime) {
         var formatter = FORMATTERS.stream().filter(fmt -> {

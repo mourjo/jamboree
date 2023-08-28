@@ -27,34 +27,38 @@ mvn clean && mvn spring-boot:run -Dspring-boot.run.jvmArguments='-Dserver.port=7
 Create a party:
 
 ```bash
-$ curl -s \
-  -H 'Content-Type: application/json' \
-  -XPOST http://localhost:7123/party/ \
-  -d '{"name": "Traders Assembly", "location": "Gariahat"}' | jq .
+$ curl -s -H 'Content-Type: application/json' \
+  -XPOST "http://localhost:7123/party/" \
+  -d '{"name": "Immunity 2023", "location": "Bidhannagar", "time": "2023-11-27 23:30 Asia/Kolkata"}'\
+  | jq . ;
+
 {
-  "created_at": "Sun, 13 Aug 2023 16:05:18 +0200",
-  "location": "Gariahat",
-  "name": "Traders Assembly",
-  "id": "1"
+  "time": "Mon, 27 Nov 2023 23:30:00 +0530",
+  "id": "80",
+  "created_at": "Mon, 28 Aug 2023 07:23:53 +0200",
+  "name": "Immunity 2023",
+  "location": "Bidhannagar"
 }
 ```
 
 Get a party:
 
 ```bash
-$ curl -s http://localhost:7123/party/1 | jq .
+$ curl -s http://localhost:7123/party/80 | jq .
+
 {
-  "created_at": "Sun, 13 Aug 2023 16:05:18 +0200",
-  "location": "Gariahat",
-  "name": "Traders Assembly",
-  "id": "1"
+  "time": "Mon, 27 Nov 2023 23:30:00 +0530",
+  "id": "80",
+  "created_at": "Mon, 28 Aug 2023 07:23:53 +0200",
+  "name": "Immunity 2023",
+  "location": "Bidhannagar"
 }
 ```
 
 Get a party that has not been created:
 
 ```bash
-$ curl -s http://localhost:7123/party/2 | jq .
+$ curl -s http://localhost:7123/party/404 | jq .
 {
   "error": "Not found"
 }

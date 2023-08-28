@@ -1,10 +1,9 @@
 package me.mourjo.jamboree.data;
 
 
-import me.mourjo.jamboree.datetime.Format;
+import me.mourjo.jamboree.datetime.DatetimeFormat;
 
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 public class Party {
@@ -71,8 +70,8 @@ public class Party {
                 "id", String.valueOf(id),
                 "name", name,
                 "location", location,
-                "time", Format.unparse(time),
-                "created_at", createdAt.format(DateTimeFormatter.RFC_1123_DATE_TIME)
+                "time", DatetimeFormat.unparse(time),
+                "created_at", DatetimeFormat.unparse(createdAt)
         );
     }
 }
