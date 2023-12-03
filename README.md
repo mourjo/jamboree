@@ -64,7 +64,7 @@ $ curl -s http://localhost:7123/party/404 | jq .
 }
 ```
 ## Routes
-There are two routes - to create a party and to retrieve a party:
+There are two routes - to create a party and to retrieve a party: http://localhost:7123/swagger-ui/index.html
 ![Alt text](src/main/resources/openapi.png)
 
 ## Demo
