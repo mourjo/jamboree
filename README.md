@@ -87,6 +87,22 @@ We can now drill down on one of the fields, here we are looking at all logs for 
 
 ![Alt text](src/main/resources/kibana_7.png)
 
+
+### Visialization
+Information from logs can be aggregated and viewed on a more macroscopic level as well:
+http://localhost:5601/app/dashboards#/view/a6cc3db0-91c2-11ee-9cd4-0f499c097bfb
+
+For the following dashboard shows requests per endpoint, response codes, logs per level (ERROR/INFO/etc):
+
+![Alt text](src/main/resources/kibana_8.png)
+
+Not only that, it allows drill down by segments as well - in the screenshot below we are looking only at 400 responses
+and what might have caused it - which is clearly visible in the "top log messages" panel:
+
+![Alt text](src/main/resources/kibana_9.png)
+
+
+### Thread local context
 If MDC is not cleared up, we can get misleading logs - here we are querying for the entire history of the part 251 - but
 we see that the latest log (topmost) seems to suggest that we are creating another party - but party 251 already exists.
 
