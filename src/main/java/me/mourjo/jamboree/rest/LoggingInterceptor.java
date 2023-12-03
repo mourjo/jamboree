@@ -21,7 +21,10 @@ public class LoggingInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+        MDC.put("RESPONSE_CODE", Integer.toString(response.getStatus()));
+        logger.info("Finished processing request");
         MDC.remove("REQUEST_METHOD");
         MDC.remove("REQUEST_URI");
+        MDC.remove("RESPONSE_CODE");
     }
 }
