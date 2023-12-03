@@ -49,7 +49,7 @@ services:
       - "./conf/kibana_export.ndjson:/usr/share/kibana_export.ndjson:ro"
     restart: "no"
     command: >
-      curl -vvv -X POST "kibana:5601/api/saved_objects/_import" --form file=@/usr/share/kibana_export.ndjson -H 'kbn-xsrf: true'
+      curl -vvv -X POST "kibana:5601/api/saved_objects/_import?overwrite=true" --form file=@/usr/share/kibana_export.ndjson -H 'kbn-xsrf: true'
 
   logstash:
     image: docker.elastic.co/logstash/logstash:8.8.0
