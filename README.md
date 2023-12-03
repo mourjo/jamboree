@@ -63,8 +63,11 @@ $ curl -s http://localhost:7123/party/404 | jq .
   "error": "Not found"
 }
 ```
+## Routes
+There are two routes - to create a party and to retrieve a party:
+![Alt text](src/main/resources/openapi.png)
 
-## Problem
+## Demo
 
 ### Setup
 Start Kibana, Elasticsearch and Logstash:
@@ -88,7 +91,7 @@ We can now drill down on one of the fields, here we are looking at all logs for 
 ![Alt text](src/main/resources/kibana_7.png)
 
 
-### Visialization
+### Visualization
 Information from logs can be aggregated and viewed on a more macroscopic level as well:
 http://localhost:5601/app/dashboards#/view/a6cc3db0-91c2-11ee-9cd4-0f499c097bfb
 
