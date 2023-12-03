@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class Response extends ResponseEntity<Map<String, String>> {
 
-    private static Logger logger = LoggerFactory.getLogger(Response.class);
+    private static final Logger logger = LoggerFactory.getLogger(Response.class);
 
     public Response(Map<String, String> body, HttpStatusCode status) {
         super(body, status);

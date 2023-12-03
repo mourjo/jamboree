@@ -18,7 +18,7 @@ import java.util.UUID;
 public class PartyController {
 
     private final PartyService service;
-    private Logger logger = LoggerFactory.getLogger(getClass().getName());
+    private final Logger logger = LoggerFactory.getLogger(getClass().getName());
 
     PartyController(PartyService service) {
         this.service = service;

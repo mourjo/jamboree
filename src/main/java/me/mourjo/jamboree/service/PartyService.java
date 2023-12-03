@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 public class PartyService {
     private final PartyRepository repository;
     private final IDGenerator idGenerator;
-    private Logger logger = LoggerFactory.getLogger(getClass().getName());
+    private final Logger logger = LoggerFactory.getLogger(getClass().getName());
 
     PartyService(PartyRepository repository, IDGenerator idGenerator) {
         this.repository = repository;
@@ -38,7 +38,7 @@ public class PartyService {
 
     public Optional<Party> find(long id) {
         var party = repository.findById(id);
-        if (party.isEmpty()){
+        if (party.isEmpty()) {
             logger.warn("Requested party does not exist: {}", id);
         }
 

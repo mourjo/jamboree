@@ -8,17 +8,15 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import java.util.concurrent.Executors;
-
 @SpringBootApplication
 public class JamboreeApplication {
 
-    private static Logger log = LoggerFactory.getLogger(JamboreeApplication.class);
+    private static final Logger logger = LoggerFactory.getLogger(JamboreeApplication.class);
 
     public static void main(String[] args) {
-        log.info("Starting application");
+        logger.info("Starting application");
         SpringApplication.run(JamboreeApplication.class, args);
-        log.info("Started application");
+        logger.info("Started application");
     }
 
     @Bean
