@@ -1,10 +1,10 @@
 package me.mourjo.jamboree.data;
 
 
+import me.mourjo.jamboree.apischema.PartyResponse;
 import me.mourjo.jamboree.datetime.DatetimeFormat;
 
 import java.time.ZonedDateTime;
-import java.util.Map;
 
 public class Party {
     Long id;
@@ -65,13 +65,7 @@ public class Party {
         this.createdAt = createdAt;
     }
 
-    public Map<String, String> toMap() {
-        return Map.of(
-                "id", String.valueOf(id),
-                "name", name,
-                "location", location,
-                "time", DatetimeFormat.unparse(time),
-                "created_at", DatetimeFormat.unparse(createdAt)
-        );
+    public PartyResponse toResponse() {
+        return new PartyResponse(String.valueOf(id), name, location, DatetimeFormat.unparse(time), DatetimeFormat.unparse(createdAt), null);
     }
 }

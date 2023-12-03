@@ -1,6 +1,6 @@
 package me.mourjo.jamboree;
 
-import me.mourjo.jamboree.rest.LoggingInterceptor;
+import me.mourjo.jamboree.middleware.LoggingInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;

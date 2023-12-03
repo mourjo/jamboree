@@ -1,4 +1,4 @@
-package me.mourjo.jamboree.rest;
+package me.mourjo.jamboree.middleware;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

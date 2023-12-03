@@ -1,6 +1,10 @@
 package me.mourjo.jamboree.rest;
 
 
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import me.mourjo.jamboree.apischema.PartyRequest;
+import me.mourjo.jamboree.apischema.PartyResponse;
 import me.mourjo.jamboree.data.Response;
 import me.mourjo.jamboree.datetime.DatetimeFormat;
 import me.mourjo.jamboree.service.PartyService;
@@ -24,51 +28,55 @@ public class PartyController {
         this.service = service;
     }
 
+    @Operation
     @GetMapping("/party/{id}")
-    Response get(@PathVariable Long id) {
+    Response<PartyResponse> get(@PathVariable Long id) {
         MDC.put("REQUEST_ID", UUID.randomUUID().toString());
         MDC.put("PARTY_ID", String.valueOf(id));
         logger.info("Reading party {}", id);
         return service.find(id)
-                .map(value -> Response.of(HttpStatus.OK, value.toMap()))
-                .orElseGet(() -> Response.of(HttpStatus.NOT_FOUND, Map.of("error", "Not found")));
+                .map(value -> Response.of(HttpStatus.OK, value.toResponse()))
+                .orElseGet(() -> Response.error(HttpStatus.NOT_FOUND, "Not found"));
     }
 
+    @Operation
     @PostMapping("/party/")
-    Response save(@RequestBody Map<String, String> params) {
+    Response<PartyResponse> save(@RequestBody PartyRequest params) {
         MDC.put("REQUEST_ID", UUID.randomUUID().toString());
         logger.info("Creating a party with {}", params);
-        if (!params.containsKey("name")) {
-            return Response.of(HttpStatus.BAD_REQUEST, Map.of("error", "Name is mandatory."));
+        if (params.name() == null) {
+            return Response.error(HttpStatus.BAD_REQUEST, "Name is mandatory.");
         }
 
-        if (!params.containsKey("location")) {
+        if (params.location() == null) {
             logger.error("Missing parameter: location");
-            return Response.of(HttpStatus.BAD_REQUEST, Map.of("error", "Location is mandatory."));
+            return Response.error(HttpStatus.BAD_REQUEST, "Location is mandatory.");
         }
 
-        if (!params.containsKey("time")) {
+        if (params.time() == null) {
             logger.error("Missing parameter: time");
-            return Response.of(HttpStatus.BAD_REQUEST, Map.of("error", "Time is mandatory."));
+            return Response.error(HttpStatus.BAD_REQUEST, "Time is mandatory.");
         }
 
-        var time = DatetimeFormat.parse(params.get("time"));
-        var createdParty = service.add(params.get("name"), params.get("location"), time);
+        var time = DatetimeFormat.parse(params.time());
+        var createdParty = service.add(params.name(), params.location(), time);
 
         MDC.put("PARTY_ID", String.valueOf(createdParty.getId()));
 
-        return Response.of(HttpStatus.CREATED, createdParty.toMap());
+        return Response.of(HttpStatus.CREATED, createdParty.toResponse());
     }
 
+    @Operation
     @GetMapping("/")
     public Map<String, String> index() {
         logger.info("Reading index path");
         return Map.of("message", "Welcome to Jamboree!");
     }
 
+    @Hidden
     @RequestMapping(value = "*")
     public Response notFound() {
-        return Response.of(HttpStatus.NOT_FOUND, Map.of("error", "Requested path not found"));
+        return Response.error(HttpStatus.NOT_FOUND, "Requested path not found");
     }
 
 }
