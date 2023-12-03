@@ -26,6 +26,9 @@
             <appendLineSeparator>true</appendLineSeparator>
         </layout>
     </appender>
+
+    <logger name="me.mourjo" level="debug"/>
+
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="ROLLING"/>
