@@ -1,9 +1,9 @@
 package me.mourjo.jamboree.data;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class PartyRepositoryImpl implements PartyRepository {
@@ -11,7 +11,7 @@ public class PartyRepositoryImpl implements PartyRepository {
     private final Map<Long, Party> data;
 
     public PartyRepositoryImpl() {
-        data = new HashMap<>();
+        data = new ConcurrentHashMap<>();
     }
 
     @Override
