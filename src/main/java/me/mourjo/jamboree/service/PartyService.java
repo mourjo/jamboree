@@ -4,11 +4,14 @@ import me.mourjo.jamboree.data.Party;
 import me.mourjo.jamboree.data.PartyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -27,10 +30,15 @@ public class PartyService {
         Party p = new Party(idGenerator.generate(), name, location, ts);
         logger.info("Created a party {} with {}", p.getId(), p);
 
-        Executors.newSingleThreadExecutor().submit(() ->
-                logger.info("Time taken to create party {} is {} ms",
-                        p.getId(),
-                        TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start))
+        var ctx = MDC.getCopyOfContextMap();
+
+        Executors.newSingleThreadExecutor().submit(() -> {
+            MDC.setContextMap(ctx);
+            logger.info("Time taken to create party {} is {} ms",
+                p.getId(),
+                TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start));
+            MDC.clear();
+            }
         );
 
         return repository.save(p);
