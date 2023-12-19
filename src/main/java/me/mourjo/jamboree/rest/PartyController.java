@@ -47,6 +47,8 @@ public class PartyController {
         if (params.name() == null) {
             return Response.error(HttpStatus.BAD_REQUEST, "Name is mandatory.");
         }
+        
+        logger.error("here {}", params);
 
         if (params.location() == null) {
             logger.error("Missing parameter: location");

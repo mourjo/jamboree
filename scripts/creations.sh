@@ -26,7 +26,7 @@ while true ; do
 
   time_str="$day_str-$month_str-$year $hour_str:$minute_str Asia/Kolkata"
 
-  payload="{\"name\": \"Adi Dhakeswari\", \"location\": \"Kolkata\", \"time\": \"$time_str\"}";
+  payload="{\"name\": \"Adi Dhakeswari\", \"time\": \"$time_str\"}";
 
   curl -s -H 'Content-Type: application/json' -XPOST "http://localhost:${PORT}/party/" -d "$payload";
 
