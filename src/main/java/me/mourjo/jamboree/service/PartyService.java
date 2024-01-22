@@ -44,4 +44,8 @@ public class PartyService {
 
         return party;
     }
+
+    public Iterable<Party> getAllParties(){
+        return repository.findAll();
+    }
 }

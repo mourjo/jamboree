@@ -1,8 +1,13 @@
 package me.mourjo.jamboree.data;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -17,6 +22,26 @@ public class PartyRepositoryImpl implements PartyRepository {
     @Override
     public <S extends Party> S save(S entity) {
         data.put(entity.getId(), entity);
+        try {
+            String url = "jdbc:postgresql://localhost:5432/jamboree";
+            Properties props = new Properties();
+            props.setProperty("user", "postgres");
+            Connection conn = DriverManager.getConnection(url, props);
+            PreparedStatement st = conn.prepareStatement("""
+                    INSERT INTO party (id, name, location, party_time, created_at) VALUES
+                    (?,?,?,?,?)
+                    """);
+            st.setObject(1, entity.getId());
+            st.setObject(2, entity.getName());
+            st.setObject(3, entity.getLocation());
+            st.setObject(4, Timestamp.from(entity.getTime().toInstant()));
+            st.setObject(5, Timestamp.from(entity.getCreatedAt().toInstant()));
+            int res = st.executeUpdate();
+            st.close();
+            conn.close();
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
         return entity;
     }
 
