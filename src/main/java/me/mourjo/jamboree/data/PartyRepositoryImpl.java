@@ -1,9 +1,7 @@
 package me.mourjo.jamboree.data;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.Timestamp;
+import java.sql.*;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
@@ -40,6 +38,7 @@ public class PartyRepositoryImpl implements PartyRepository {
             st.close();
             conn.close();
         } catch (Throwable e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
         return entity;
@@ -55,7 +54,34 @@ public class PartyRepositoryImpl implements PartyRepository {
 
     @Override
     public Optional<Party> findById(Long id) {
-        return Optional.ofNullable(data.get(id));
+        try{String url = "jdbc:postgresql://localhost:5432/jamboree";
+            Properties props = new Properties();
+            props.setProperty("user", "postgres");
+            Connection conn = DriverManager.getConnection(url, props);
+            PreparedStatement st = conn.prepareStatement("SELECT * FROM party WHERE id = ?");
+            st.setLong(1, id);
+            ResultSet rs = st.executeQuery();
+            Party entity = new Party();
+            boolean emptyResult = true;
+            while (rs.next()) {
+                emptyResult = false;
+                entity.setId(rs.getLong(1));
+                entity.setName(rs.getString(2));
+                entity.setLocation(rs.getString(3));
+                entity.setTime(rs.getTimestamp(4).toInstant().atZone(ZoneId.systemDefault()));
+                entity.setCreatedAt(rs.getTimestamp(5).toInstant().atZone(ZoneId.systemDefault()));
+            }
+            rs.close();
+            st.close();
+            if(emptyResult){
+                return Optional.empty();
+            }
+            return Optional.of(entity);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
