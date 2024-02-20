@@ -12,17 +12,16 @@ import java.util.Optional;
 @Service
 public class PartyService {
     private final PartyRepository repository;
-    private final IDGenerator idGenerator;
+
     private final Logger logger = LoggerFactory.getLogger(getClass().getName());
 
     PartyService(PartyRepository repository, IDGenerator idGenerator) {
         this.repository = repository;
-        this.idGenerator = idGenerator;
     }
 
     public Party add(String name, String location, ZonedDateTime ts) {
         var start = System.nanoTime();
-        Party p = new Party(idGenerator.generate(), name, location, ts);
+        Party p = new Party(repository.getId(), name, location, ts);
         logger.info("Created a party {} with {}", p.getId(), p);
 
         return repository.save(p);
@@ -37,7 +36,7 @@ public class PartyService {
         return party;
     }
 
-    public Iterable<Party> getAllParties(){
+    public Iterable<Party> getAllParties() {
         return repository.findAll();
     }
 }

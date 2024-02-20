@@ -13,6 +13,28 @@ public class PartyRepositoryImpl implements PartyRepository {
 
     private final Map<Long, Party> data;
 
+    @Override
+    public long getId() {
+        try {
+            String url = "jdbc:postgresql://localhost:5432/jamboree";
+            Properties props = new Properties();
+            props.setProperty("user", "postgres");
+            Connection conn = DriverManager.getConnection(url, props);
+            PreparedStatement st = conn.prepareStatement("SELECT id FROM party ORDER BY id DESC LIMIT 1");
+            ResultSet rs = st.executeQuery();
+            long id = -1;
+            while (rs.next()) {
+                id = rs.getLong(1);
+            }
+            rs.close();
+            st.close();
+            return ++id;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
+    }
+
     public PartyRepositoryImpl() {
         data = new ConcurrentHashMap<>();
     }
@@ -63,7 +85,7 @@ public class PartyRepositoryImpl implements PartyRepository {
             st.setLong(1, id);
             ResultSet rs = st.executeQuery();
             Party entity = new Party();
-            if(rs.isBeforeFirst()){
+            if (rs.isBeforeFirst()) {
                 return Optional.empty();
             }
             while (rs.next()) {
