@@ -5,5 +5,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PartyRepository extends CrudRepository<Party, Long> {
-    long getId();
 }

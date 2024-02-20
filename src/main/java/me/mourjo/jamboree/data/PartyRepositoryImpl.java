@@ -13,27 +13,6 @@ public class PartyRepositoryImpl implements PartyRepository {
 
     private final Map<Long, Party> data;
 
-    @Override
-    public long getId() {
-        try {
-            String url = "jdbc:postgresql://localhost:5432/jamboree";
-            Properties props = new Properties();
-            props.setProperty("user", "postgres");
-            Connection conn = DriverManager.getConnection(url, props);
-            PreparedStatement st = conn.prepareStatement("SELECT id FROM party ORDER BY id DESC LIMIT 1");
-            ResultSet rs = st.executeQuery();
-            long id = -1;
-            while (rs.next()) {
-                id = rs.getLong(1);
-            }
-            rs.close();
-            st.close();
-            return ++id;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException();
-        }
-    }
 
     public PartyRepositoryImpl() {
         data = new ConcurrentHashMap<>();
@@ -41,24 +20,34 @@ public class PartyRepositoryImpl implements PartyRepository {
 
     @Override
     public <S extends Party> S save(S entity) {
-        data.put(entity.getId(), entity);
         try {
             String url = "jdbc:postgresql://localhost:5432/jamboree";
             Properties props = new Properties();
             props.setProperty("user", "postgres");
             Connection conn = DriverManager.getConnection(url, props);
-            PreparedStatement st = conn.prepareStatement("""
+            conn.setAutoCommit(false);
+            PreparedStatement st1 = conn.prepareStatement("SELECT id FROM party ORDER BY id DESC LIMIT 1");
+            ResultSet rs1 = st1.executeQuery();
+            long id = 1L;
+            while (rs1.next()) {
+                id = rs1.getLong(1);
+            }
+            PreparedStatement st2 = conn.prepareStatement("""
                     INSERT INTO party (id, name, location, party_time, created_at) VALUES
                     (?,?,?,?,?)
                     """);
-            st.setObject(1, entity.getId());
-            st.setObject(2, entity.getName());
-            st.setObject(3, entity.getLocation());
-            st.setObject(4, Timestamp.from(entity.getTime().toInstant()));
-            st.setObject(5, Timestamp.from(entity.getCreatedAt().toInstant()));
-            int res = st.executeUpdate();
-            st.close();
+            st2.setObject(1, ++id);
+            st2.setObject(2, entity.getName());
+            st2.setObject(3, entity.getLocation());
+            st2.setObject(4, Timestamp.from(entity.getTime().toInstant()));
+            st2.setObject(5, Timestamp.from(entity.getCreatedAt().toInstant()));
+            int res = st2.executeUpdate();
+            conn.commit();
+            st1.close();
+            rs1.close();
+            st2.close();
             conn.close();
+            entity.setId(id);
         } catch (Throwable e) {
             e.printStackTrace();
             throw new RuntimeException(e);
