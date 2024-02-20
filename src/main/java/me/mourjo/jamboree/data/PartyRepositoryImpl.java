@@ -54,17 +54,19 @@ public class PartyRepositoryImpl implements PartyRepository {
 
     @Override
     public Optional<Party> findById(Long id) {
-        try{String url = "jdbc:postgresql://localhost:5432/jamboree";
+        try {
+            String url = "jdbc:postgresql://localhost:5432/jamboree";
             Properties props = new Properties();
             props.setProperty("user", "postgres");
             Connection conn = DriverManager.getConnection(url, props);
-            PreparedStatement st = conn.prepareStatement("SELECT * FROM party WHERE id = ?");
+            PreparedStatement st = conn.prepareStatement("SELECT * FROM party WHERE id = ? LIMIT 1");
             st.setLong(1, id);
             ResultSet rs = st.executeQuery();
             Party entity = new Party();
-            boolean emptyResult = true;
+            if(rs.isBeforeFirst()){
+                return Optional.empty();
+            }
             while (rs.next()) {
-                emptyResult = false;
                 entity.setId(rs.getLong(1));
                 entity.setName(rs.getString(2));
                 entity.setLocation(rs.getString(3));
@@ -73,12 +75,8 @@ public class PartyRepositoryImpl implements PartyRepository {
             }
             rs.close();
             st.close();
-            if(emptyResult){
-                return Optional.empty();
-            }
             return Optional.of(entity);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
