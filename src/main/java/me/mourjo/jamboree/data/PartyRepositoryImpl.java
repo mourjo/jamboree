@@ -74,7 +74,7 @@ public class PartyRepositoryImpl implements PartyRepository {
             st.setLong(1, id);
             ResultSet rs = st.executeQuery();
             Party entity = new Party();
-            if (rs.isBeforeFirst()) {
+            if (!rs.isBeforeFirst()) {
                 return Optional.empty();
             }
             while (rs.next()) {
