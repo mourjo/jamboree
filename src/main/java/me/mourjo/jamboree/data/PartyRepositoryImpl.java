@@ -1,5 +1,8 @@
 package me.mourjo.jamboree.data;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
 import java.sql.*;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -12,10 +15,20 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PartyRepositoryImpl implements PartyRepository {
 
     private final Map<Long, Party> data;
-
+    private final HikariDataSource ds;
 
     public PartyRepositoryImpl() {
+
         data = new ConcurrentHashMap<>();
+
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl("jdbc:postgresql://localhost:5432/jamboree");
+        config.setUsername("postgres");
+        config.addDataSourceProperty("cachePrepStmts", "true");
+        config.addDataSourceProperty("prepStmtCacheSize", "250");
+        config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+
+        ds = new HikariDataSource(config);
     }
 
     @Override
@@ -24,7 +37,7 @@ public class PartyRepositoryImpl implements PartyRepository {
             String url = "jdbc:postgresql://localhost:5432/jamboree";
             Properties props = new Properties();
             props.setProperty("user", "postgres");
-            Connection conn = DriverManager.getConnection(url, props);
+            Connection conn = ds.getConnection();
             conn.setAutoCommit(false);
             PreparedStatement st1 = conn.prepareStatement("SELECT id FROM party ORDER BY id DESC LIMIT 1");
             ResultSet rs1 = st1.executeQuery();
@@ -69,7 +82,7 @@ public class PartyRepositoryImpl implements PartyRepository {
             String url = "jdbc:postgresql://localhost:5432/jamboree";
             Properties props = new Properties();
             props.setProperty("user", "postgres");
-            Connection conn = DriverManager.getConnection(url, props);
+            Connection conn = ds.getConnection();
             PreparedStatement st = conn.prepareStatement("SELECT * FROM party WHERE id = ? LIMIT 1");
             st.setLong(1, id);
             ResultSet rs = st.executeQuery();
@@ -86,6 +99,7 @@ public class PartyRepositoryImpl implements PartyRepository {
             }
             rs.close();
             st.close();
+            conn.close();
             return Optional.of(entity);
         } catch (Exception e) {
             e.printStackTrace();
