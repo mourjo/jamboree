@@ -33,11 +33,11 @@ public class PartyRepositoryImpl implements PartyRepository {
 
     @Override
     public <S extends Party> S save(S entity) {
-        try {
+        try (Connection conn = ds.getConnection()){
             String url = "jdbc:postgresql://localhost:5432/jamboree";
             Properties props = new Properties();
             props.setProperty("user", "postgres");
-            Connection conn = ds.getConnection();
+
             conn.setAutoCommit(false);
             PreparedStatement st1 = conn.prepareStatement("SELECT id FROM party ORDER BY id DESC LIMIT 1");
             ResultSet rs1 = st1.executeQuery();
@@ -59,7 +59,6 @@ public class PartyRepositoryImpl implements PartyRepository {
             st1.close();
             rs1.close();
             st2.close();
-            conn.close();
             entity.setId(id);
         } catch (Throwable e) {
             e.printStackTrace();
@@ -78,11 +77,10 @@ public class PartyRepositoryImpl implements PartyRepository {
 
     @Override
     public Optional<Party> findById(Long id) {
-        try {
+        try (Connection conn = ds.getConnection()){
             String url = "jdbc:postgresql://localhost:5432/jamboree";
             Properties props = new Properties();
             props.setProperty("user", "postgres");
-            Connection conn = ds.getConnection();
             PreparedStatement st = conn.prepareStatement("SELECT * FROM party WHERE id = ? LIMIT 1");
             st.setLong(1, id);
             ResultSet rs = st.executeQuery();
@@ -99,7 +97,6 @@ public class PartyRepositoryImpl implements PartyRepository {
             }
             rs.close();
             st.close();
-            conn.close();
             return Optional.of(entity);
         } catch (Exception e) {
             e.printStackTrace();
