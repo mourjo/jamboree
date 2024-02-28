@@ -28,7 +28,7 @@ class JamboreeApplicationTests {
     private int port;
 
     @Test
-    void testCreateGetParty() {
+    void testCreateGetDeleteParty() {
         var response = restTemplate.getForObject(getEndpoint("1"), Map.class);
 
         response = restTemplate.postForObject(postEndpoint(), Map.of("location", "Kolkata"), Map.class);
@@ -44,6 +44,7 @@ class JamboreeApplicationTests {
         assertEquals(Map.of("error", "Time is mandatory."), response);
 
         String id;
+        String[] ids = new String[11];
         for (int i = 1; i <= 10; i++) {
             var now = LocalDateTime.now().atZone(ZoneId.of("Etc/UTC")).toString();
             var data = Map.of("name", "party-" + i, "location", "Kolkata", "time", now);
@@ -55,7 +56,13 @@ class JamboreeApplicationTests {
             response = restTemplate.getForObject(getEndpoint(id), Map.class);
             assertEquals("Kolkata", response.get("location"));
             assertEquals("party-" + i, response.get("name"));
-
+            ids[i] = id;
+        }
+        for(int i = 1; i <= 10; i++){
+            id = ids[i];
+            restTemplate.delete(deleteEndpoint(id));
+            response = restTemplate.getForObject(getEndpoint(id), Map.class);
+            assertEquals(null, response.get("location"));
         }
     }
 
@@ -65,6 +72,10 @@ class JamboreeApplicationTests {
 
     private String postEndpoint() {
         return String.format("http://localhost:%s/party/", port);
+    }
+
+    private String deleteEndpoint(String id){
+        return String.format("http://localhost:%s/party/%s", port, id);
     }
 
 }
