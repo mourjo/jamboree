@@ -35,6 +35,9 @@ public class PartyService {
 
         return party;
     }
+    public void delete(long id){
+        repository.deleteById(id);
+    }
 
     public Iterable<Party> getAllParties() {
         return repository.findAll();

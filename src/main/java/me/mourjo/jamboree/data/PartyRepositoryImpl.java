@@ -34,10 +34,8 @@ public class PartyRepositoryImpl implements PartyRepository {
     @Override
     public <S extends Party> S save(S entity) {
         try (Connection conn = ds.getConnection()){
-            String url = "jdbc:postgresql://localhost:5432/jamboree";
             Properties props = new Properties();
             props.setProperty("user", "postgres");
-
             conn.setAutoCommit(false);
             PreparedStatement st1 = conn.prepareStatement("SELECT id FROM party ORDER BY id DESC LIMIT 1");
             ResultSet rs1 = st1.executeQuery();
@@ -78,7 +76,6 @@ public class PartyRepositoryImpl implements PartyRepository {
     @Override
     public Optional<Party> findById(Long id) {
         try (Connection conn = ds.getConnection()){
-            String url = "jdbc:postgresql://localhost:5432/jamboree";
             Properties props = new Properties();
             props.setProperty("user", "postgres");
             PreparedStatement st = conn.prepareStatement("SELECT * FROM party WHERE id = ? LIMIT 1");
@@ -132,7 +129,17 @@ public class PartyRepositoryImpl implements PartyRepository {
 
     @Override
     public void deleteById(Long id) {
-        data.remove(id);
+        try(Connection conn = ds.getConnection()){
+            PreparedStatement st = conn.prepareStatement("DELETE FROM party WHERE id = ?");
+            st.setLong(1, id);
+            st.executeUpdate();
+            st.close();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override
