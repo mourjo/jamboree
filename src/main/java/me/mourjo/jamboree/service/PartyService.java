@@ -21,7 +21,7 @@ public class PartyService {
 
     public Party add(String name, String location, ZonedDateTime ts) {
         var start = System.nanoTime();
-        Party p = new Party(-1L, name, location, ts);
+        Party p = new Party(name, location, ts);
         p = repository.save(p);
         logger.info("Created a party {} with {}", p.getId(), p);
         return p;

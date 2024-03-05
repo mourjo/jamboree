@@ -3,34 +3,40 @@ package me.mourjo.jamboree.data;
 
 import me.mourjo.jamboree.apischema.PartyResponse;
 import me.mourjo.jamboree.datetime.DatetimeFormat;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
+import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
-
+@Table
 public class Party {
+    @Id
     Long id;
     String name;
-    ZonedDateTime time;
+    @Column("party_time")
+    OffsetDateTime time;
     String location;
-    ZonedDateTime createdAt;
+    @Column("created_at")
+    OffsetDateTime createdAt;
 
     public Party() {
-        this(-1L, "Unknown", "Unknown", ZonedDateTime.now());
+        this( "Unknown", "Unknown", ZonedDateTime.now());
     }
 
-    public Party(Long id, String name, String location, ZonedDateTime time) {
-        this.id = id;
+    public Party(String name, String location, ZonedDateTime time) {
         this.name = name;
         this.location = location;
-        this.time = time;
-        this.createdAt = ZonedDateTime.now();
+        this.time = time.toOffsetDateTime();
+        this.createdAt = ZonedDateTime.now().toOffsetDateTime();
     }
 
     public ZonedDateTime getTime() {
-        return time;
+        return time.toZonedDateTime();
     }
 
     public void setTime(ZonedDateTime time) {
-        this.time = time;
+        this.time = time.toOffsetDateTime();
     }
 
     public Long getId() {
@@ -58,14 +64,14 @@ public class Party {
     }
 
     public ZonedDateTime getCreatedAt() {
-        return createdAt;
+        return createdAt.toZonedDateTime();
     }
 
     public void setCreatedAt(ZonedDateTime createdAt) {
-        this.createdAt = createdAt;
+        this.createdAt = createdAt.toOffsetDateTime();
     }
 
     public PartyResponse toResponse() {
-        return new PartyResponse(String.valueOf(id), name, location, DatetimeFormat.unparse(time), DatetimeFormat.unparse(createdAt), null);
+        return new PartyResponse(String.valueOf(id), name, location, DatetimeFormat.unparse(time.toZonedDateTime()), DatetimeFormat.unparse(createdAt.toZonedDateTime()), null);
     }
 }
