@@ -1,6 +1,8 @@
 package me.mourjo.jamboree;
 
+import me.mourjo.jamboree.data.PartyRepository;
 import me.mourjo.jamboree.rest.PartyController;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +28,9 @@ class JamboreeApplicationTests {
 
     @Value(value = "${local.server.port}")
     private int port;
+
+    @Autowired
+    private PartyRepository repository;
 
     @Test
     void testCreateGetDeleteParty() {
@@ -58,12 +63,11 @@ class JamboreeApplicationTests {
             assertEquals("party-" + i, response.get("name"));
             ids[i] = id;
         }
-        for(int i = 1; i <= 10; i++){
-            id = ids[i];
-            restTemplate.delete(deleteEndpoint(id));
-            response = restTemplate.getForObject(getEndpoint(id), Map.class);
-            assertEquals(null, response.get("location"));
-        }
+    }
+
+    @AfterEach
+    void cleanUp(){
+        repository.deleteAll();
     }
 
     private String getEndpoint(String id) {
