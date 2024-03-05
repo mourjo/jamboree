@@ -86,12 +86,12 @@ public class PartyController {
 
     @Operation
     @DeleteMapping("/party/{id}")
-    Response delete(@PathVariable Long id){
+    Response<String> delete(@PathVariable Long id){
         MDC.put("REQUEST_ID", UUID.randomUUID().toString());
         MDC.put("PARTY_ID", String.valueOf(id));
         logger.info("Deleting party {}", id);
         service.delete(id);
-        return new Response("Deleted Party with id " + id, HttpStatus.OK);
+        return new Response<String>("Deleted Party with id " + id, HttpStatus.OK);
     }
 
     @Hidden
