@@ -5,12 +5,14 @@ import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import me.mourjo.jamboree.apischema.PartyRequest;
 import me.mourjo.jamboree.apischema.PartyResponse;
+import me.mourjo.jamboree.data.Party;
 import me.mourjo.jamboree.data.Response;
 import me.mourjo.jamboree.datetime.DatetimeFormat;
 import me.mourjo.jamboree.service.PartyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +22,7 @@ import java.util.UUID;
 
 @RestController
 public class PartyController {
-
+    @Autowired
     private final PartyService service;
     private final Logger logger = LoggerFactory.getLogger(getClass().getName());
 
@@ -66,6 +68,8 @@ public class PartyController {
         return Response.of(HttpStatus.CREATED, createdParty.toResponse());
     }
 
+
+
     @Operation
     @GetMapping("/")
     public Map<String, String> index() {
@@ -73,10 +77,26 @@ public class PartyController {
         return Map.of("message", "Welcome to Jamboree!");
     }
 
+    @Operation
+    @GetMapping("/get-all/")
+    public Iterable<Party> getPrint() {
+        MDC.put("REQUEST_ID", UUID.randomUUID().toString());
+        return service.getAllParties();
+    }
+
+    @Operation
+    @DeleteMapping("/party/{id}")
+    Response<String> delete(@PathVariable Long id){
+        MDC.put("REQUEST_ID", UUID.randomUUID().toString());
+        MDC.put("PARTY_ID", String.valueOf(id));
+        logger.info("Deleting party {}", id);
+        service.delete(id);
+        return new Response<String>("Deleted Party with id " + id, HttpStatus.OK);
+    }
+
     @Hidden
     @RequestMapping(value = "*")
     public Response notFound() {
         return Response.error(HttpStatus.NOT_FOUND, "Requested path not found");
     }
-
 }

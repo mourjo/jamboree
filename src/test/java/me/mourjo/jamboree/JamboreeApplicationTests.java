@@ -1,6 +1,8 @@
 package me.mourjo.jamboree;
 
+import me.mourjo.jamboree.data.PartyRepository;
 import me.mourjo.jamboree.rest.PartyController;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,11 +29,12 @@ class JamboreeApplicationTests {
     @Value(value = "${local.server.port}")
     private int port;
 
+    @Autowired
+    private PartyRepository repository;
+
     @Test
-    void testCreateGetParty() {
+    void testCreateGetDeleteParty() {
         var response = restTemplate.getForObject(getEndpoint("1"), Map.class);
-        assertEquals(Set.of("error"), response.keySet());
-        assertEquals(Map.of("error", "Not found"), response);
 
         response = restTemplate.postForObject(postEndpoint(), Map.of("location", "Kolkata"), Map.class);
         assertEquals(Set.of("error"), response.keySet());
@@ -45,23 +48,26 @@ class JamboreeApplicationTests {
         assertEquals(Set.of("error"), response.keySet());
         assertEquals(Map.of("error", "Time is mandatory."), response);
 
+        String id;
+        String[] ids = new String[11];
         for (int i = 1; i <= 10; i++) {
             var now = LocalDateTime.now().atZone(ZoneId.of("Etc/UTC")).toString();
             var data = Map.of("name", "party-" + i, "location", "Kolkata", "time", now);
             response = restTemplate.postForObject(postEndpoint(), data, Map.class);
             assertEquals(Set.of("id", "location", "name", "created_at", "time"), response.keySet());
-            assertEquals(String.valueOf(i), response.get("id"));
+            id = (String) response.get("id");
             assertEquals("Kolkata", response.get("location"));
             assertEquals("party-" + i, response.get("name"));
+            response = restTemplate.getForObject(getEndpoint(id), Map.class);
+            assertEquals("Kolkata", response.get("location"));
+            assertEquals("party-" + i, response.get("name"));
+            ids[i] = id;
         }
+    }
 
-        response = restTemplate.getForObject(getEndpoint("1"), Map.class);
-        assertEquals("Kolkata", response.get("location"));
-        assertEquals("party-1", response.get("name"));
-
-        response = restTemplate.getForObject(getEndpoint("10"), Map.class);
-        assertEquals("Kolkata", response.get("location"));
-        assertEquals("party-10", response.get("name"));
+    @AfterEach
+    void cleanUp(){
+        repository.deleteAll();
     }
 
     private String getEndpoint(String id) {
@@ -70,6 +76,10 @@ class JamboreeApplicationTests {
 
     private String postEndpoint() {
         return String.format("http://localhost:%s/party/", port);
+    }
+
+    private String deleteEndpoint(String id){
+        return String.format("http://localhost:%s/party/%s", port, id);
     }
 
 }

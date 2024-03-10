@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3"
 
 volumes:
   certs:
@@ -6,7 +6,7 @@ volumes:
 
 networks:
   default:
-    name: elastic
+    #name: elastic
     external: false
 
 services:
@@ -26,8 +26,7 @@ services:
   kibana:
     image: docker.elastic.co/kibana/kibana:8.8.0
     depends_on:
-      elasticsearch:
-        condition: service_healthy
+      - elasticsearch
     ports:
       - 5601:5601
     environment:
@@ -43,8 +42,7 @@ services:
   kibanasetup:
     image: alpine/curl:8.2.1
     depends_on:
-      kibana:
-        condition: service_healthy
+      - kibana
     volumes:
       - "./conf/kibana_export.ndjson:/usr/share/kibana_export.ndjson:ro"
     restart: "no"
@@ -54,8 +52,7 @@ services:
   logstash:
     image: docker.elastic.co/logstash/logstash:8.8.0
     depends_on:
-      kibana:
-        condition: service_healthy
+      - kibana
     user: root
     volumes:
       - "./logs/:/usr/share/logstash/jamboree_logs/"
@@ -63,3 +60,15 @@ services:
     environment:
       - xpack.monitoring.enabled=false
       - ELASTIC_HOSTS=http://elasticsearch:9200
+
+  postgres:
+    # Docker Hub image
+    image: postgres:14
+    # Provide the password for postgres
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    ports:
+      - '5432:5432'
+    volumes:
+      - './tmp/volumes/postgres:/var/lib/postgresql/data'

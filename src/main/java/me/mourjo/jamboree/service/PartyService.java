@@ -8,32 +8,23 @@ import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
 import java.util.Optional;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class PartyService {
     private final PartyRepository repository;
-    private final IDGenerator idGenerator;
+
     private final Logger logger = LoggerFactory.getLogger(getClass().getName());
 
     PartyService(PartyRepository repository, IDGenerator idGenerator) {
         this.repository = repository;
-        this.idGenerator = idGenerator;
     }
 
     public Party add(String name, String location, ZonedDateTime ts) {
         var start = System.nanoTime();
-        Party p = new Party(idGenerator.generate(), name, location, ts);
+        Party p = new Party(name, location, ts);
+        p = repository.save(p);
         logger.info("Created a party {} with {}", p.getId(), p);
-
-        Executors.newSingleThreadExecutor().submit(() ->
-                logger.info("Time taken to create party {} is {} ms",
-                        p.getId(),
-                        TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start))
-        );
-
-        return repository.save(p);
+        return p;
     }
 
     public Optional<Party> find(long id) {
@@ -43,5 +34,12 @@ public class PartyService {
         }
 
         return party;
+    }
+    public void delete(long id){
+        repository.deleteById(id);
+    }
+
+    public Iterable<Party> getAllParties() {
+        return repository.findAll();
     }
 }
