@@ -1,8 +1,28 @@
-# jamboree
+# jamboree: Structured Logging with Spring
 
-Structured Logging with Spring
+This is a companion project to [this blog article](https://medium.com/booking-com-development/unlocking-observability-structured-logging-in-spring-boot-c81dbabfb9e7). 
+The goal is to demonstrate structured logging in a Spring Boot application with the ELK stack.
 
-## Start the application
+## Infrastructure
+We will use a common logging infrastructure setup with Elasticsearch, Logstash and Kibana (ELK stack)
+
+- **Log storage**: This is the search index and storage location for our structured logs. For this demo, we are using Elasticsearch
+- **Log ingestor**: Application logs are locally stored on files (or streamed to STDERR), these logs need to be aggregated and collected for storage in Elasticsearch. In a production setup, there will be multiple nodes from where logs need to be aggregated. In this demo, we only have one application instance producing these nodes, which are periodically fetched by Logstash.
+- **Logging UI**: As logs get aggregated and stored, we need an user-interface to view and analyze the logs. We will use Kibana for this.
+
+
+<img src="src/main/resources/infra.jpeg" width="70%" />
+
+# Running the system
+
+
+The infrastructure setup can be provisioned with docker compose
+```shell
+docker compose -f docker-compose.yml up
+```
+
+
+## Starting the application
 
 Compile into a jar:
 
@@ -67,20 +87,16 @@ $ curl -s http://localhost:7123/party/404 | jq .
 There are two routes - to create a party and to retrieve a party: http://localhost:7123/swagger-ui/index.html
 ![Alt text](src/main/resources/openapi.png)
 
-## Demo
 
-### Setup
-Start Kibana, Elasticsearch and Logstash:
-```bash
-docker compose up
-```
 
-Start firing requests with:
+### Request firing utility
+
+Start firing requests with the included script:
 ```bash
 ./scripts/requests.sh 7123
 ```
 
-### Logs
+# Logs on Kibana
 Open Kibana on the browser: http://localhost:5601/app/discover#/view/a8a646e0-3f5a-11ee-acc5-bf1ed6446365
 
 What you see is a good example of structured logging - we see the different fields in the log message in the columns:
@@ -91,7 +107,7 @@ We can now drill down on one of the fields, here we are looking at all logs for 
 ![Alt text](src/main/resources/kibana_7.png)
 
 
-### Visualization
+# Visualization
 Information from logs can be aggregated and viewed on a more macroscopic level as well:
 http://localhost:5601/app/dashboards#/view/a6cc3db0-91c2-11ee-9cd4-0f499c097bfb
 
@@ -105,7 +121,7 @@ and what might have caused it - which is clearly visible in the "top log message
 ![Alt text](src/main/resources/kibana_9.png)
 
 
-### Thread local context
+# Thread local context
 If MDC is not cleared up, we can get misleading logs - here we are querying for the entire history of the part 251 - but
 we see that the latest log (topmost) seems to suggest that we are creating another party - but party 251 already exists.
 
