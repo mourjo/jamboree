@@ -119,21 +119,3 @@ Not only that, it allows drill down by segments as well - in the screenshot belo
 and what might have caused it - which is clearly visible in the "top log messages" panel:
 
 ![Alt text](src/main/resources/kibana_9.png)
-
-
-# Thread local context
-If MDC is not cleared up, we can get misleading logs - here we are querying for the entire history of the part 251 - but
-we see that the latest log (topmost) seems to suggest that we are creating another party - but party 251 already exists.
-
-![Alt text](src/main/resources/kibana_5.png)
-
-
-Digging a bit deeper, if we now look only at the request ID from the previous request, we see two logs having the same
-request ID. Since we are using UUIDs for request ID logging, this screenshot seems to suggest that we created two parties
-in the same request.
-
-![Alt text](src/main/resources/kibana_6.png)
-
-But in reality, that is not so, what happens in the log at the bottom is that it is reusing a past request's context
-which has not been properly cleaned up - so we see that although the request parameters did not have an ID, it still
-logs an ID from the last request that the thread served.
