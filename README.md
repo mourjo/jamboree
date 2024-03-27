@@ -119,3 +119,10 @@ Not only that, it allows drill down by segments as well - in the screenshot belo
 and what might have caused it - which is clearly visible in the "top log messages" panel:
 
 ![Alt text](src/main/resources/kibana_9.png)
+
+# Blog Article
+
+Read more about this project and structured logging here: 
+https://medium.com/booking-com-development/unlocking-observability-structured-logging-in-spring-boot-c81dbabfb9e7
+
+
